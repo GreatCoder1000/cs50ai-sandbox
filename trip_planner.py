@@ -1,0 +1,99 @@
+import dfs
+
+# Each node is a key-value pair where the key is the node name and the value is
+# a list of key-value pairs that are the place that it connects to and the 
+# distance there.
+
+diagram = {
+    "bergen": [
+        {"voss": (104.0, [])},
+        {"haugesund": (135.0, [])},
+    ],
+    "voss": [
+        {"bergen": (104.0, [])},
+        {"vinje": (19.0, [])},
+        {"kjerland": (24.7, [])}
+    ],
+    "vinje": [
+        {"voss": (19.0, [])},
+        {"hønefoss": (332.0, [])}
+    ],
+    "kjerland": [
+        {"voss": (24.7, [])},
+        {"hardangerbrua": (10.8, [])}
+    ],
+    "hardangerbrua": [
+        {"kjerland": (10.8, [])},
+        {"hønefoss": (266.0, [])}
+    ],
+    "hønefoss": [
+        {"vinje": (332.0, [])},
+        {"hardangerbrua": (266.0, [])},
+        {"oslo": (59.0, [])}
+    ],
+    "oslo": [
+        {"hønefoss": (59.0, [])},
+        {"drammen": (43.0, [])},
+    ],
+    "kristiansand": [
+        {"oslo": (321.0, [])},
+        {"haugesund": (304.0, [])}
+    ],
+    "haugesund": [
+        {"kristiansand": (304.0, [])},
+        {"bergen": (135.0, [])},
+        {"haukeli": (172.0, [])},
+    ],
+    "drammen": [
+        {"kristiansand": (278.0, [])},
+        {"oslo": (43.0, [])},
+        {"haukeli": (206.0, [])}
+    ],
+    "haukeli": [
+        {"drammen": (206.0, [])},
+        {"haugesund": (172.0, [])}
+    ],
+}
+
+print("Welcome to the trip planner!")
+
+loc = input("Enter your location:                     > ").strip().lower()
+if loc not in diagram.keys():
+    while True:
+        loc = input("Location not found. Please try again.    > ").strip().lower()
+        if loc in diagram.keys():
+            break
+
+loc = loc.lower()
+
+dest = input("Enter your destination:                  > ").strip().lower()
+if dest not in diagram.keys():
+    while True:
+        dest = input("Destination not found. Please try again. > ").strip().lower()
+        if dest in diagram.keys():
+            break
+
+dest = dest.lower()
+print(f"Recommended route from {loc.title()} to {dest.title()}:")
+shortest_route = dfs.find_shortest_route_from_to(diagram, loc, dest)
+via = shortest_route[0][1:-1]
+print(f"Distance: {round(shortest_route[1])} km")
+if via:
+    print(f"Via {', '.join(via)}")
+
+# Show alternative routes
+all_routes = dfs.find_all_routes_with_cost(diagram, loc, dest)
+# Remove the shortest route from alternatives
+alternatives = [route for route in all_routes if route != shortest_route]
+
+if alternatives:
+    print("\nAlternative routes:")
+    for route, cost in sorted(alternatives, key=lambda x: x[1]):
+        via_alt = route[1:-1]
+        print(f"Distance: {round(cost)} km", end="")
+        if via_alt:
+            print(f" via {', '.join(via_alt)}")
+        else:
+            print()
+else:
+    print("\nNo alternative routes found.")
