@@ -22,7 +22,7 @@ def find_all_routes_with_cost(neural, start, end):
             routes.append((path + [node], cost))
             return
         for child_dict in neural.get(node, []):
-            for child, (edge_cost, _) in child_dict.items():
+            for child, edge_cost in child_dict.items():  # edge_cost is now a float
                 if child not in path:  # Prevent cycles
                     dfs(child, target, path + [node], cost + edge_cost)
 
